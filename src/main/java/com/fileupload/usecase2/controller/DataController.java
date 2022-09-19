@@ -5,6 +5,7 @@ import com.fileupload.usecase2.entity.ImageData;
 import com.fileupload.usecase2.exception.ErrorMessages;
 import com.fileupload.usecase2.model.ResponseData;
 import com.fileupload.usecase2.service.StorageService;
+import com.fileupload.usecase2.service.Target;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -31,17 +32,7 @@ public class DataController {
 
         if(file.isEmpty()) throw new Exception(ErrorMessages.FILE_DOESNT_EXIST.getErrorMessage());
 
-        if (Objects.equals(target, "DB")) {
-            String uploadImage = service.uploadImage(file);
-            ResponseData responseData = new ResponseData(new Date(), uploadImage);
-            return new ResponseEntity<>(responseData, new HttpHeaders(),HttpStatus.OK);
-
-        } else if (Objects.equals(target, "HDD")) {
-            String uploadImage = service.uploadImageToFileSystem(file);
-            ResponseData responseData = new ResponseData(new Date(), uploadImage);
-            return new ResponseEntity<>(responseData, new HttpHeaders(),HttpStatus.OK);
-
-        } else throw new Exception(ErrorMessages.WRONG_FORMAT.getErrorMessage());
+        return service.upload(Target.valueOf(target), file);
     }
 
     @GetMapping("/download/{fileId}")
